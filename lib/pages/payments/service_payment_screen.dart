@@ -27,7 +27,7 @@ class _PaymentMethodScreenState extends State<ServicePaymentScreen> {
   late PaymentArguments paymentData;
 
   late Razorpay _razorpay;
-  static const String _razorpayKey = 'rzp_test_B54BlMynixkzHI';
+  static const String _razorpayKey = 'rzp_live_ZdGjJKZdukGGzL';
 
   @override
   void initState() {
@@ -275,82 +275,13 @@ if (isSuccess) {
   void _handlePaymentErrorResponse(PaymentFailureResponse response) {
     debugPrint("Razorpay Error: code=${response.code}, message=${response.message}");
 
-    // If using test key and payment is cancelled/failed (common in testing environments)
-    if (_razorpayKey.startsWith('rzp_test_')) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Row(
-            children: [
-              Icon(Icons.info_outline, color: Colors.orange),
-              SizedBox(width: 8),
-              Text("Payment Status", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ],
-          ),
-          content: Text(
-            "Payment was not completed (${response.message ?? 'Cancelled'}).\n\n"
-            "Because you are using a Razorpay Testing Key, real banking apps cancel test requests.\n\n"
-            "Would you like to complete this booking with a Test Payment?",
-            style: const TextStyle(fontSize: 14),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF2E7D32),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              ),
-              onPressed: () {
-                Navigator.pop(ctx);
-                _simulateTestPayment();
-              },
-              child: const Text("Complete Test Order", style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        ),
-      );
-    } else {
-      UtilClass.showAlertDialog(
-          context: context, message: "Payment Failed: ${response.message}");
-    }
+    UtilClass.showAlertDialog(
+        context: context, message: "Payment Failed: ${response.message}");
   }
 
   void _handleExternalWalletResponse(ExternalWalletResponse response) {
     UtilClass.showAlertDialog(
         context: context, message: "External Wallet Selected: ${response.walletName}");
-  }
-
-  void _simulateTestPayment() async {
-    paymentId = "PAY_TEST_${DateTime.now().millisecondsSinceEpoch}";
-    if (mounted) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(
-          child: Card(
-            child: Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(color: Color(0xFF2E7D32)),
-                  SizedBox(height: 16),
-                  Text(
-                    "Placing your order (Test Mode)...",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-    await _completeOrder();
   }
 
   // ---------------------------
@@ -457,8 +388,6 @@ if (isSuccess) {
   }
 
   Widget _buildBottomPaymentSection() {
-    final isTestMode = _razorpayKey.startsWith('rzp_test_');
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -494,24 +423,6 @@ if (isSuccess) {
               )
             ],
           ),
-          if (isTestMode) ...[
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              height: 38,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.check_circle_outline, size: 16, color: Color(0xFF2E7D32)),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF2E7D32),
-                  side: const BorderSide(color: Color(0xFF2E7D32)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                onPressed: _simulateTestPayment,
-                label: const Text("Place Order with Test Key (Simulate Payment)",
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-              ),
-            ),
-          ],
         ],
       ),
     );

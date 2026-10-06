@@ -270,7 +270,7 @@ if (priceData is int) {
 
     Razorpay razorpay = Razorpay();
     var options = {
-      'key': 'rzp_test_B54BlMynixkzHI',
+      'key': 'rzp_live_ZdGjJKZdukGGzL',
       'amount': (payableAmt * 100).toInt(),
       'name': 'Go buddy',
       'description': 'Subscription Payment',
@@ -296,53 +296,6 @@ if (priceData is int) {
     debugPrint("MESSAGE: ${response.message}");
     debugPrint("ERROR: ${response.error}");
     debugPrint("-------------------------");
-
-    const String rzpKey = 'rzp_test_B54BlMynixkzHI';
-    if (rzpKey.startsWith('rzp_test_')) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Row(
-            children: [
-              Icon(Icons.payment, color: Colors.orange),
-              SizedBox(width: 8),
-              Text("Payment (Test Mode)",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            ],
-          ),
-          content: Text(
-            "${response.message ?? 'Payment was cancelled or failed'}\n\n"
-            "You are in Test Mode (using test key). Real UPI apps like PhonePe and Google Pay cancel test requests.\n\n"
-            "Would you like to simulate a successful payment to test the subscription backend activation flow?",
-            style: const TextStyle(fontSize: 14, height: 1.4),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF00A651),
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.pop(ctx);
-                handlePaymentSuccessResponse(PaymentSuccessResponse(
-                  "pay_test_${DateTime.now().millisecondsSinceEpoch}",
-                  "",
-                  "",
-                  {},
-                ));
-              },
-              child: const Text("Simulate Success & Proceed"),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
 
     UtilClass.showAlertDialog(
       context: context,
